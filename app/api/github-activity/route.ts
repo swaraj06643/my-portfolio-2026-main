@@ -21,6 +21,7 @@ type GraphQlResponse = {
 };
 
 const GITHUB_API_URL = "https://api.github.com/graphql";
+const FALLBACK_PUBLIC_API_URL = "https://github-contributions-api.jogruber.de/v4";
 
 export async function GET(request: NextRequest) {
   const username = request.nextUrl.searchParams.get("username");
@@ -36,13 +37,39 @@ export async function GET(request: NextRequest) {
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
-    return NextResponse.json(
-      {
-        error:
-          "Missing GITHUB_TOKEN. Add it in your environment to include private contributions.",
-      },
-      { status: 500 }
-    );
+    // Fallback: show public contribution calendar even without a GitHub token.
+    // This avoids the GitHub card disappearing on Vercel when env vars are not set.
+    type PublicContribution = { date: string; count: number; level: number };
+    type PublicApiResponse = { contributions?: PublicContribution[]; total?: Record<string, number> };
+
+    try {
+      const url = `${FALLBACK_PUBLIC_API_URL}/${encodeURIComponent(username)}?y=${year}`;
+      const response = await fetch(url, {
+        method: "GET",
+        // Cache on the edge for ~1 hour (the upstream also does caching).
+        cache: "force-cache",
+        headers: {
+          "Accept": "application/json",
+          "User-Agent": "portfolio-github-activity",
+        },
+      });
+
+      if (!response.ok) {
+        return NextResponse.json(
+          { error: "Failed to fetch GitHub activity (public fallback)" },
+          { status: response.status }
+        );
+      }
+
+      const payload = (await response.json()) as PublicApiResponse;
+      const contributions = Array.isArray(payload.contributions) ? payload.contributions : [];
+      return NextResponse.json({ contributions });
+    } catch {
+      return NextResponse.json(
+        { error: "Failed to load GitHub activity (public fallback)" },
+        { status: 500 }
+      );
+    }
   }
 
   const from = `${year}-01-01T00:00:00Z`;

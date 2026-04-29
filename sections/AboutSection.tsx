@@ -45,16 +45,29 @@ export function AboutSection() {
               About Me
             </h2>
             <p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              I&apos;m a developer focused on AI prompt engineering and full-stack
-              development. I build clean, performant applications and craft
-              effective AI interactions. Always learning, always shipping.
+              I&apos;m a developer who designs with LLMs and builds with
+              intention.
+              <br />
+              I&apos;m focused on prompt systems (RAG/agents) that produce reliable,
+              user-friendly outputs.
+              <br />
+              I care about latency, safety, and conversational UX—not just demos.
+              <br />
+              I also design mobile experiences as a Flutter UI designer.
+              <br />
+              My current goal is to become a strong LangChain aspirant.
+              <br />
+              I prototype workflows, refine prompts, and iterate based on real usage.
+              <br />
+              I enjoy shipping clean, performant full-stack products end-to-end.
+              <br />
+              Always learning, always improving, always building.
             </p>
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
               {[
-                { value: 5, label: "Years Experience", suffix: "+" },
+                { value: 3, label: "Years Experience", suffix: "" },
                 { value: 20, label: "Projects Delivered", suffix: "+" },
                 { value: 100, label: "Commits", suffix: "%" },
-                { value: 1, label: "Cup of Coffee", suffix: " ☕" },
               ].map((item, i) => (
                 <motion.div
                   key={item.label}

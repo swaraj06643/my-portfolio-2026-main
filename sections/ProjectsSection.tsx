@@ -78,6 +78,9 @@ export function ProjectsSection() {
           <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
             Projects
           </h2>
+          <p className="mb-2 text-sm text-muted-foreground">
+            <span aria-hidden="true">*</span> Application projects include video demo; websites have link.
+          </p>
           <p className="mt-2 text-lg text-muted-foreground">
             A selection of recent work.
           </p>
