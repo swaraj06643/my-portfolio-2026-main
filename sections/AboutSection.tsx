@@ -44,25 +44,25 @@ export function AboutSection() {
             <h2 className="mb-5 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               About Me
             </h2>
-            <p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              I&apos;m a developer who designs with LLMs and builds with
-              intention.
-              <br />
-              I&apos;m focused on prompt systems (RAG/agents) that produce reliable,
-              user-friendly outputs.
-              <br />
-              I care about latency, safety, and conversational UX—not just demos.
-              <br />
-              I also design mobile experiences as a Flutter UI designer.
-              <br />
-              My current goal is to become a strong LangChain aspirant.
-              <br />
-              I prototype workflows, refine prompts, and iterate based on real usage.
-              <br />
-              I enjoy shipping clean, performant full-stack products end-to-end.
-              <br />
-              Always learning, always improving, always building.
-            </p>
+            <div className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              <p>
+                I&apos;m an AI product builder and <span className="font-semibold text-foreground">LLM designer</span>
+                who turns messy ideas into focused, reliable prompt systems. I work with{" "}
+                <span className="font-semibold text-foreground">RAG</span> and agent
+                workflows to produce answers that feel natural, safe, and consistent.
+              </p>
+              <p className="mt-4">
+                I also design mobile experiences as a <span className="font-semibold text-foreground">Flutter UI designer</span>,
+                bridging interaction, typography, and performance. Right now, I&apos;m
+                aiming to become a strong <span className="font-semibold text-foreground">LangChain aspirant</span>:
+                I prototype, refine prompts, and iterate based on real usage.
+              </p>
+              <p className="mt-4">
+                I care about latency and conversational UX - not just demos. I enjoy
+                shipping clean, performant full-stack products end-to-end. Always learning,
+                always improving, always building.
+              </p>
+            </div>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
               {[
                 { value: 3, label: "Years Experience", suffix: "" },
