@@ -5,7 +5,7 @@ import { Linkedin, Github, Mail } from "lucide-react";
 
 const CONTACT_LINKS = [
   {
-    href: "www.linkedin.com/in/subhasish-rath-926b902a4",
+    href: "https://www.linkedin.com/in/subhasish-rath-926b902a4",
     label: "LinkedIn",
     icon: Linkedin,
   },
