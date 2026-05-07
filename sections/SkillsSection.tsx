@@ -83,7 +83,7 @@ export function SkillsSection() {
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <DepthLayers as="section" id="skills" className="scroll-mt-24 px-6 py-8 md:py-12 md:px-8">
+    <DepthLayers as="section" id="skills" className="scroll-mt-24 px-6 pb-8 pt-2 md:px-8 md:pb-10 md:pt-4">
       <div className="mx-auto max-w-4xl" ref={ref}>
         <motion.h2
           initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}

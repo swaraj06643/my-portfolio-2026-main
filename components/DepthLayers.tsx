@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef, ReactNode } from "react";
 
 type DepthLayersProps = {
@@ -26,6 +26,7 @@ export function DepthLayers({
   id,
 }: DepthLayersProps) {
   const ref = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -40,7 +41,7 @@ export function DepthLayers({
     <Comp ref={ref as React.Ref<HTMLDivElement>} id={id} className={`relative overflow-hidden ${className}`}>
       {/* Layer 1: Gradient mesh (slowest) */}
       <motion.div
-        style={{ y: bgY }}
+        style={reduceMotion ? undefined : { y: bgY }}
         className="pointer-events-none absolute inset-0 -z-20"
         aria-hidden
       >
@@ -49,24 +50,32 @@ export function DepthLayers({
 
       {/* Layer 2: Grid */}
       <motion.div
-        style={{
-          y: gridY,
-          backgroundImage:
-            "linear-gradient(hsl(var(--foreground)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)/0.04) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
-        }}
+        style={
+          reduceMotion
+            ? {
+                backgroundImage:
+                  "linear-gradient(hsl(var(--foreground)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)/0.04) 1px, transparent 1px)",
+                backgroundSize: "80px 80px",
+              }
+            : {
+                y: gridY,
+                backgroundImage:
+                  "linear-gradient(hsl(var(--foreground)/0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)/0.04) 1px, transparent 1px)",
+                backgroundSize: "80px 80px",
+              }
+        }
         className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] dark:opacity-25"
       />
 
       {/* Layer 3: Floating orbs */}
       <motion.div
-        style={{ x: orb1X }}
-        className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-foreground/[0.04] blur-[80px] dark:bg-foreground/[0.06] animate-float-orb will-change-transform"
+        style={reduceMotion ? undefined : { x: orb1X }}
+        className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-foreground/[0.04] blur-[80px] dark:bg-foreground/[0.06] will-change-transform motion-safe:animate-float-orb"
         aria-hidden
       />
       <motion.div
-        style={{ x: orb2X }}
-        className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-foreground/[0.03] blur-[100px] dark:bg-foreground/[0.05] animate-float-orb will-change-transform"
+        style={reduceMotion ? undefined : { x: orb2X }}
+        className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-foreground/[0.03] blur-[100px] dark:bg-foreground/[0.05] will-change-transform motion-safe:animate-float-orb"
         aria-hidden
       />
 

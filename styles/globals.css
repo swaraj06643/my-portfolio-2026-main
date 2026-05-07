@@ -72,7 +72,7 @@
   }
 
   html {
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
     min-height: 100%;
   }
 
@@ -293,24 +293,4 @@
   will-change: opacity;
 }
 
-/* Lenis smooth scroll */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-smooth iframe {
-  pointer-events: none;
-}
+/* Native smooth scrolling is used globally. */

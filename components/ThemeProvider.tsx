@@ -11,7 +11,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       enableSystem={false}
       storageKey="portfolio-theme"
       disableTransitionOnChange={false}
-      themes={["light", "dark", "green", "yellow"]}
+      themes={["light", "dark"]}
     >
       {children}
     </NextThemesProvider>

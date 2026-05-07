@@ -1,26 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun, Leaf, SunDim } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const THEMES = ["light", "dark", "green", "yellow"] as const;
-type ThemeId = (typeof THEMES)[number];
-
-const ICONS: Record<ThemeId, React.ComponentType<{ className?: string }>> = {
-  light: Sun,
-  dark: Moon,
-  green: Leaf,
-  yellow: SunDim,
-};
-
-const LABELS: Record<ThemeId, string> = {
-  light: "Light",
-  dark: "Dark",
-  green: "Soft green",
-  yellow: "Soft yellow",
-};
 
 export function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
@@ -31,29 +14,43 @@ export function ThemeToggle({ className }: { className?: string }) {
   if (!mounted) {
     return (
       <div
-        className={cn("h-10 w-10 rounded-xl border border-border bg-muted/50", className)}
+        className={cn(
+          "h-8 w-16 rounded-full border border-border bg-muted/50 sm:h-8 sm:w-[72px]",
+          className
+        )}
         aria-hidden
       />
     );
   }
 
-  const current = (THEMES.includes(theme as ThemeId) ? theme : "light") as ThemeId;
-  const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
-  const next = THEMES[nextIndex];
-  const Icon = ICONS[current];
+  const isDark = theme === "dark";
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(next)}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted/50 text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
+        "relative flex h-8 w-16 touch-manipulation items-center rounded-full border border-border/80 bg-muted/70 px-1.5 transition-colors duration-300 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background sm:w-[72px]",
         className
       )}
-      aria-label={`Theme: ${LABELS[current]}. Switch to ${LABELS[next]}`}
-      title={`${LABELS[current]} (next: ${LABELS[next]})`}
+      style={{ justifyContent: isDark ? "flex-start" : "flex-end" }}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Dark mode" : "Light mode"}
     >
-      <Icon className="h-5 w-5" />
+      <motion.div
+        layout
+        whileTap={{ scale: 0.92 }}
+        transition={{
+          type: "spring",
+          stiffness: 360,
+          damping: 28,
+          mass: 0.7,
+        }}
+        className={cn(
+          "h-5 w-5 rounded-full shadow-sm sm:h-6 sm:w-6",
+          isDark ? "bg-violet-500" : "bg-amber-400"
+        )}
+      />
     </button>
   );
 }

@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       query,
       variables: { username, from, to },
     }),
-    cache: "no-store",
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -124,5 +124,12 @@ export async function GET(request: NextRequest) {
     }))
   );
 
-  return NextResponse.json({ contributions });
+  return NextResponse.json(
+    { contributions },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    }
+  );
 }

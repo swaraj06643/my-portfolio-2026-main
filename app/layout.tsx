@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { DottedSurface } from "@/components/DottedSurface";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -37,7 +38,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans min-h-screen antialiased`}>
         <ThemeProvider>
-          <SmoothScroll>{children}</SmoothScroll>
+          <DottedSurface />
+          <div className="relative z-10">
+            <SmoothScroll>{children}</SmoothScroll>
+          </div>
         </ThemeProvider>
       </body>
     </html>

@@ -1,55 +1,49 @@
 "use client";
 
-import { useEffect, useRef, ReactNode } from "react";
-
-type LenisInstance = {
-  raf: (time: number) => void;
-  destroy: () => void;
-  scrollTo: (target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => void;
-};
+import { motion, useScroll, useSpring } from "framer-motion";
+import { ReactNode } from "react";
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
-  const lenisRef = useRef<LenisInstance | null>(null);
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    mass: 0.4,
+  });
 
-  useEffect(() => {
-    let rafId: number | undefined;
-    const initLenis = async () => {
-      try {
-        const Lenis = (await import("lenis")).default;
-        const lenis = new Lenis({
-          // Lerp-based interpolation feels smoother on high refresh-rate displays.
-          lerp: 0.08,
-          duration: 1,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -12 * t)),
-          orientation: "vertical",
-          gestureOrientation: "vertical",
-          smoothWheel: true,
-          syncTouch: false,
-          touchMultiplier: 1.05,
-          wheelMultiplier: 1,
-          anchors: true,
-        }) as LenisInstance;
-        lenisRef.current = lenis;
-        const raf = (time: number) => {
-          lenis.raf(time);
-          rafId = requestAnimationFrame(raf);
-        };
-        rafId = requestAnimationFrame(raf);
-      } catch {
-        // Lenis failed; page still works with native scroll
-      }
-    };
-    initLenis();
-    return () => {
-      if (lenisRef.current) {
-        try {
-          lenisRef.current.destroy();
-        } catch {}
-        lenisRef.current = null;
-      }
-      if (rafId !== undefined) cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  return <>{children}</>;
+  return (
+    <>
+      <motion.aside
+        className="pointer-events-none fixed right-4 top-1/2 z-[65] hidden -translate-y-1/2 md:block"
+        style={{ opacity: smoothProgress }}
+        aria-hidden
+      >
+        <svg
+          width="75"
+          height="75"
+          viewBox="0 0 100 100"
+          className="-rotate-90"
+        >
+          <circle
+            cx="50"
+            cy="50"
+            r="30"
+            pathLength="1"
+            className="fill-none stroke-foreground/20"
+            strokeWidth="5"
+          />
+          <motion.circle
+            cx="50"
+            cy="50"
+            r="30"
+            pathLength="1"
+            style={{ pathLength: smoothProgress }}
+            className="fill-none stroke-foreground"
+            strokeWidth="5"
+          />
+        </svg>
+      </motion.aside>
+      {children}
+    </>
+  );
 }
