@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DepthLayers } from "@/components/DepthLayers";
 import { GitHubActivity } from "@/components/GitHubActivity";
-import { scrollRevealStagger } from "@/lib/motion";
+import { ease, scrollRevealStagger } from "@/lib/motion";
 import Image from "next/image";
 import { FlippingCard } from "@/components/FlippingCard";
 

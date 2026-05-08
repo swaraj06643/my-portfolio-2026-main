@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { DepthLayers } from "@/components/DepthLayers";
 import {
@@ -21,7 +21,7 @@ import {
 type IconGridItem = {
   id: string;
   name: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 };
 
 const SKILLS: IconGridItem[] = [
@@ -36,7 +36,7 @@ const SKILLS: IconGridItem[] = [
   { id: "python", name: "Python", icon: <Code2 className="h-9 w-9" /> },
   { id: "framer", name: "Framer Motion", icon: <Framer className="h-9 w-9" /> },
   { id: "api", name: "REST & GraphQL", icon: <Globe className="h-9 w-9" /> },
-  { id: "vercel", name: "Vercel", icon: <Layers3 className="h-9 w-9" /> },
+  { id: "vercel", name: "Dart", icon: <Layers3 className="h-9 w-9" /> },
 ];
 
 const containerVariants = {
