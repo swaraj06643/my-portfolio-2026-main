@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,45 +14,75 @@ const ROLES = [
   "Problem Solver",
 ];
 
-function FloatingPaths({ position }: { position: number }) {
-  const paths = Array.from({ length: 36 }, (_, i) => ({
-    id: i,
-    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-      380 - i * 5 * position
-    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-      152 - i * 5 * position
-    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-      684 - i * 5 * position
-    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    width: 0.5 + i * 0.03,
-  }));
+type GradientDotsProps = React.ComponentProps<typeof motion.div> & {
+  dotSize?: number;
+  spacing?: number;
+  duration?: number;
+  colorCycleDuration?: number;
+  backgroundColor?: string;
+};
+
+function GradientDots({
+  dotSize = 8,
+  spacing = 10,
+  duration = 30,
+  colorCycleDuration = 6,
+  backgroundColor = "hsl(var(--background))",
+  className,
+  ...props
+}: GradientDotsProps) {
+  const hexSpacing = spacing * 1.732;
 
   return (
-    <div className="pointer-events-none absolute inset-0">
-      <svg className="h-full w-full text-slate-900 dark:text-white" viewBox="0 0 696 316" fill="none">
-        <title>Hero Background Paths</title>
-        {paths.map((path) => (
-          <motion.path
-            key={path.id}
-            d={path.d}
-            stroke="currentColor"
-            strokeWidth={path.width}
-            strokeOpacity={0.06 + path.id * 0.02}
-            initial={{ pathLength: 0.3, opacity: 0.5 }}
-            animate={{
-              pathLength: 1,
-              opacity: [0.25, 0.55, 0.25],
-              pathOffset: [0, 1, 0],
-            }}
-            transition={{
-              duration: 18 + path.id * 0.2,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          />
-        ))}
-      </svg>
-    </div>
+    <motion.div
+      className={cn("absolute inset-0", className)}
+      style={{
+        backgroundColor,
+        backgroundImage: `
+          radial-gradient(circle at 50% 50%, transparent 1.5px, ${backgroundColor} 0 ${dotSize}px, transparent ${dotSize}px),
+          radial-gradient(circle at 50% 50%, transparent 1.5px, ${backgroundColor} 0 ${dotSize}px, transparent ${dotSize}px),
+          radial-gradient(circle at 50% 50%, #f00, transparent 60%),
+          radial-gradient(circle at 50% 50%, #ff0, transparent 60%),
+          radial-gradient(circle at 50% 50%, #0f0, transparent 60%),
+          radial-gradient(ellipse at 50% 50%, #00f, transparent 60%)
+        `,
+        backgroundSize: `
+          ${spacing}px ${hexSpacing}px,
+          ${spacing}px ${hexSpacing}px,
+          200% 200%,
+          200% 200%,
+          200% 200%,
+          200% ${hexSpacing}px
+        `,
+        backgroundPosition: `
+          0px 0px, ${spacing / 2}px ${hexSpacing / 2}px,
+          0% 0%,
+          0% 0%,
+          0% 0%,
+          0% 0%
+        `,
+      }}
+      animate={{
+        backgroundPosition: [
+          `0px 0px, ${spacing / 2}px ${hexSpacing / 2}px, 800% 400%, 1000% -400%, -1200% -600%, 400% ${hexSpacing}px`,
+          `0px 0px, ${spacing / 2}px ${hexSpacing / 2}px, 0% 0%, 0% 0%, 0% 0%, 0% 0%`,
+        ],
+        filter: ["hue-rotate(0deg)", "hue-rotate(360deg)"],
+      }}
+      transition={{
+        backgroundPosition: {
+          duration,
+          ease: "linear",
+          repeat: Number.POSITIVE_INFINITY,
+        },
+        filter: {
+          duration: colorCycleDuration,
+          ease: "linear",
+          repeat: Number.POSITIVE_INFINITY,
+        },
+      }}
+      {...props}
+    />
   );
 }
 
@@ -143,13 +173,29 @@ export function HeroSection() {
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const contentY = useTransform(scrollYProgress, [0, 0.25], ["0%", "12%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.45], [1, 0.25]);
+  const cursorX = useMotionValue(0.5);
+  const cursorY = useMotionValue(0.5);
+  const smoothX = useSpring(cursorX, { stiffness: 120, damping: 20, mass: 0.3 });
+  const smoothY = useSpring(cursorY, { stiffness: 120, damping: 20, mass: 0.3 });
+  const overlayX = useTransform(smoothX, [0, 1], ["15%", "85%"]);
+  const overlayY = useTransform(smoothY, [0, 1], ["20%", "80%"]);
 
   const magneticPrimary = useMagnetic();
   const magneticOutline = useMagnetic();
 
+  const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
+    const bounds = ref.current?.getBoundingClientRect();
+    if (!bounds) return;
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    cursorX.set(Math.max(0, Math.min(1, x)));
+    cursorY.set(Math.max(0, Math.min(1, y)));
+  };
+
   return (
     <section
       ref={ref}
+      onMouseMove={handleMouseMove}
       className="relative flex min-h-[72vh] flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-12 md:min-h-[70vh] md:px-8 md:pt-28 md:pb-14"
     >
       {/* Hero-only animated background */}
@@ -157,9 +203,18 @@ export function HeroSection() {
         style={{ y: bgY }}
         className="pointer-events-none absolute inset-0 -z-20 bg-background"
       >
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
+        <GradientDots className="opacity-70" />
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(420px circle at var(--mx) var(--my), hsl(var(--foreground) / 0.18), transparent 68%)",
+            "--mx": overlayX,
+            "--my": overlayY,
+          } as React.CSSProperties}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background/65" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent via-background/75 to-background md:h-36" />
       </motion.div>
 
       {/* Main content */}

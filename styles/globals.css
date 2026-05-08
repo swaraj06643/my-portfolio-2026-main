@@ -5,18 +5,48 @@
 /* Spacing scale (4px base) – use for rhythm */
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 0 0% 9%;
-    --border: 0 0% 90%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 9%;
-    --accent-foreground: 0 0% 99%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 99%;
     --card: 0 0% 100%;
-    --ring: 0 0% 9%;
-    /* Section rhythm – compact for ~3 scrolls */
+    --ring: 0 100% 60%;
+    --input: 0 0% 0%;
+    --muted: 0 0% 94%;
+    --accent: 216 100% 50%;
+    --border: 0 0% 0%;
+    --radius: 0px;
+    --chart-1: 0 100% 60%;
+    --chart-2: 60 100% 50%;
+    --chart-3: 216 100% 50%;
+    --chart-4: 120 100% 40%;
+    --chart-5: 300 100% 40%;
+    --popover: 0 0% 100%;
+    --primary: 0 100% 60%;
+    --sidebar: 0 0% 94%;
+    --secondary: 60 100% 50%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --destructive: 0 0% 0%;
+    --sidebar-ring: 0 100% 60%;
+    --sidebar-accent: 216 100% 50%;
+    --sidebar-border: 0 0% 0%;
+    --card-foreground: 0 0% 0%;
+    --sidebar-primary: 0 100% 60%;
+    --muted-foreground: 0 0% 20%;
+    --accent-foreground: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --sidebar-foreground: 0 0% 0%;
+    --secondary-foreground: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --shadow-blur: 0px;
+    --shadow-color: 0 0% 0%;
+    --shadow-spread: 0px;
+    --shadow-opacity: 1;
+    --shadow-offset-x: 4px;
+    --shadow-offset-y: 4px;
+    --font-mono: "Space Mono", monospace;
+    --font-sans: "DM Sans", sans-serif;
+
     --section-padding-y: 2rem;
     --section-padding-y-md: 2.75rem;
     --content-gap: 1rem;
@@ -24,47 +54,38 @@
   }
 
   .dark {
-    --background: 0 0% 3%;
-    --foreground: 0 0% 98%;
-    --border: 0 0% 14%;
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 66%;
-    --accent: 0 0% 98%;
-    --accent-foreground: 0 0% 9%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --card: 0 0% 6%;
-    --ring: 0 0% 98%;
-  }
-
-  /* Soft green theme */
-  .green {
-    --background: 140 22% 97%;
-    --foreground: 145 25% 14%;
-    --border: 140 15% 88%;
-    --muted: 140 20% 93%;
-    --muted-foreground: 145 15% 42%;
-    --accent: 145 35% 22%;
-    --accent-foreground: 0 0% 98%;
-    --primary: 145 35% 22%;
-    --primary-foreground: 0 0% 98%;
-    --card: 0 0% 100%;
-    --ring: 145 35% 22%;
-  }
-
-  /* Soft yellow theme */
-  .yellow {
-    --background: 48 35% 97%;
-    --foreground: 45 25% 16%;
-    --border: 45 25% 88%;
-    --muted: 48 28% 93%;
-    --muted-foreground: 45 20% 40%;
-    --accent: 42 45% 28%;
-    --accent-foreground: 0 0% 98%;
-    --primary: 42 45% 28%;
-    --primary-foreground: 0 0% 98%;
-    --card: 0 0% 100%;
-    --ring: 42 45% 28%;
+    --card: 0 0% 20%;
+    --ring: 0 100% 70%;
+    --input: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --accent: 210 100% 60%;
+    --border: 0 0% 100%;
+    --chart-1: 0 100% 70%;
+    --chart-2: 60 100% 60%;
+    --chart-3: 210 100% 60%;
+    --chart-4: 120 60% 50%;
+    --chart-5: 300 60% 50%;
+    --popover: 0 0% 20%;
+    --primary: 0 100% 70%;
+    --sidebar: 0 0% 0%;
+    --secondary: 60 100% 60%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --destructive: 0 0% 100%;
+    --sidebar-ring: 0 100% 70%;
+    --sidebar-accent: 210 100% 60%;
+    --sidebar-border: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --sidebar-primary: 0 100% 70%;
+    --muted-foreground: 0 0% 80%;
+    --accent-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --sidebar-foreground: 0 0% 100%;
+    --secondary-foreground: 0 0% 0%;
+    --destructive-foreground: 0 0% 0%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 0%;
   }
 
   * {
@@ -79,6 +100,7 @@
   body {
     min-height: 100vh;
     @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
     transition: background-color 0.35s ease, color 0.3s ease;
   }
