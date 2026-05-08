@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { scrollRevealStagger } from "@/lib/motion";
-import { useTilt3D } from "@/hooks/useTilt3D";
 
 export type Certification = {
   title: string;
@@ -17,7 +16,18 @@ export type Certification = {
 
 export function CertificationCard({ certification }: { certification: Certification }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const tilt = useTilt3D();
+  const [hovered, setHovered] = useState(false);
+  const [rotation, setRotation] = useState("0deg");
+  const rtlTitle = /[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F]/.test(certification.title);
+  const rtlDescription = /[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F]/.test(certification.issuer);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const angle = Math.atan2(y, x);
+    setRotation(`${angle}rad`);
+  };
 
   const close = useCallback(() => setLightboxOpen(false), []);
   useEffect(() => {
@@ -36,19 +46,33 @@ export function CertificationCard({ certification }: { certification: Certificat
         <button
           type="button"
           onClick={() => setLightboxOpen(true)}
-          className="block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-2xl"
+          className="mx-auto block w-full max-w-[388px] text-left outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-2xl"
         >
-          <motion.div
-            style={{
-              rotateX: tilt.rotateX,
-              rotateY: tilt.rotateY,
-              transformStyle: "preserve-3d",
+          <div
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => {
+              setHovered(false);
+              setRotation("0deg");
             }}
-            onMouseMove={tilt.onMouseMove}
-            onMouseLeave={tilt.onMouseLeave}
-            className="gradient-border-wrap rounded-2xl will-change-transform"
+            style={{
+              border: "3px solid transparent",
+              borderRadius: "1em",
+              padding: "10px",
+              backgroundOrigin: "border-box",
+              backgroundClip: "padding-box, border-box",
+              backgroundImage: `linear-gradient(hsl(var(--background)), hsl(var(--background))), conic-gradient(from ${rotation}, #FF8A00 0deg, #FF8A00 90deg, #242424 90deg, #242424 360deg)`,
+            }}
+            className="transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(255,138,0,0.35)]"
           >
-            <div className="liquid-glass-card overflow-hidden rounded-[calc(1rem-1px)] bg-background/80 backdrop-blur-xl transition-all duration-500 group-hover:shadow-glow-bloom dark:bg-background/90">
+            <div
+              style={{
+                backgroundImage:
+                  "linear-gradient(45deg, rgba(230,230,230,0.15) 25%, transparent 25%, transparent 75%, rgba(240,240,240,0.15) 75%), linear-gradient(-45deg, rgba(240,240,240,0.15) 25%, transparent 25%, transparent 75%, rgba(230,230,230,0.15) 75%)",
+                backgroundSize: "20.84px 20.84px",
+              }}
+              className="overflow-hidden rounded-[calc(1rem-1px)] border border-white/10 bg-black pb-2"
+            >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
                   src={certification.image}
@@ -58,24 +82,34 @@ export function CertificationCard({ certification }: { certification: Certificat
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-transform"
                 />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"
-                  aria-hidden
-                />
-                <div className="absolute bottom-0 left-0 right-0 liquid-glass-pane rounded-t-2xl border-b-0 px-4 py-3 md:px-5 md:py-4">
-                  <h3 className="text-base font-semibold tracking-tight text-foreground md:text-lg line-clamp-2">
-                    {certification.title}
-                  </h3>
-                  <p className="mt-0.5 text-xs text-muted-foreground md:text-sm">
-                    {certification.issuer}
-                  </p>
-                </div>
               </div>
-              <div className="border-t border-foreground/[0.06] dark:border-foreground/10 px-4 py-3 md:px-5 md:py-4">
-                <p className="text-sm text-muted-foreground">{certification.date}</p>
+              <div className="flex min-h-[120px] flex-col justify-between px-3 pb-1 pt-2.5 md:min-h-[128px] md:px-5 md:pt-3">
+                <h3
+                  dir={rtlTitle ? "rtl" : "ltr"}
+                  className="relative mb-1 overflow-hidden text-center text-sm font-bold tracking-tight text-[#f5f5f5] md:text-lg"
+                >
+                  <span className="relative z-10 px-1">
+                    {certification.title}
+                  </span>
+                  <span
+                    style={{
+                      clipPath: hovered
+                        ? "polygon(0 0, 100% 0, 100% 100%, 0% 100%)"
+                        : "polygon(0 50%, 100% 50%, 100% 50%, 0 50%)",
+                    }}
+                    className="absolute inset-[-4px] z-0 bg-[#FF8A00] transition-all duration-300 [transition-timing-function:cubic-bezier(.1,.5,.5,1)]"
+                  />
+                </h3>
+                <p
+                  dir={rtlDescription ? "rtl" : "ltr"}
+                  className="mb-1 line-clamp-2 text-[11px] text-[#f5f5f5]/85 md:text-sm"
+                >
+                  {certification.issuer}
+                </p>
+                <p className="text-xs text-[#f5f5f5]/70 md:text-sm">{certification.date}</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         </button>
 
         {certification.verifyUrl && (
@@ -83,7 +117,7 @@ export function CertificationCard({ certification }: { certification: Certificat
             href={certification.verifyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl liquid-glass-pane text-muted-foreground transition-all duration-300 hover:text-foreground hover:shadow-glow-focus opacity-0 group-hover:opacity-100"
+            className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-black/55 text-white/85 backdrop-blur-sm transition-all duration-300 hover:text-white hover:shadow-glow-focus opacity-0 group-hover:opacity-100"
             aria-label="Verify certificate"
             onClick={(e) => e.stopPropagation()}
           >
