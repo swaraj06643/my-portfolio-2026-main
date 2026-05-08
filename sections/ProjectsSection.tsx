@@ -1,18 +1,16 @@
 "use client";
 
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DepthLayers } from "@/components/DepthLayers";
 import { GitHubActivity } from "@/components/GitHubActivity";
-import { ease } from "@/lib/motion";
+import { scrollRevealStagger } from "@/lib/motion";
 import Image from "next/image";
+import { FlippingCard } from "@/components/FlippingCard";
 
 const GITHUB_PROFILE = "https://github.com/swaraj06643";
 
 type ProjectShowcase = {
-  emoji: string;
-  hueA: number;
-  hueB: number;
   title: string;
   description: string;
   tech: string[];
@@ -24,9 +22,6 @@ type ProjectShowcase = {
 
 const PROJECTS: ProjectShowcase[] = [
   {
-    emoji: "🤖",
-    hueA: 225,
-    hueB: 275,
     title: "Nexora Ai",
     description:
       "An AI vibe coding platform that helps generate websites, PDFs, and resumes with source code—all downloadable.",
@@ -36,9 +31,6 @@ const PROJECTS: ProjectShowcase[] = [
     github: GITHUB_PROFILE,
   },
   {
-    emoji: "🛟",
-    hueA: 350,
-    hueB: 20,
     title: "Rakshyak App",
     description:
       "An emergency access platform designed for people across India, especially in rural and unfamiliar places. It provides quick reach to core emergency facilities like nearest hospital support, ambulance help, police contacts, and location-aware safety access during urgent situations.",
@@ -47,9 +39,6 @@ const PROJECTS: ProjectShowcase[] = [
     github: GITHUB_PROFILE,
   },
   {
-    emoji: "📄",
-    hueA: 35,
-    hueB: 62,
     title: "Hirepilot",
     description:
       "A platform to get hired by companies with a humanized, best-in-class ATS-scored resume generator.",
@@ -59,9 +48,6 @@ const PROJECTS: ProjectShowcase[] = [
     github: GITHUB_PROFILE,
   },
   {
-    emoji: "🧠",
-    hueA: 80,
-    hueB: 130,
     title: "Mind Forge",
     description:
       "A mental ability and coding practice engine for students from class 6 to B.Tech. It combines coding drills, logic challenges, and neural improvement activities to strengthen focus, reasoning speed, memory retention, and problem-solving confidence.",
@@ -70,9 +56,6 @@ const PROJECTS: ProjectShowcase[] = [
     github: GITHUB_PROFILE,
   },
   {
-    emoji: "🧬",
-    hueA: 188,
-    hueB: 235,
     title: "Face Score",
     description:
       "A face analysis app where users can upload or click a photo to get a facial score with detailed form-factor insights. It suggests personalized exercises and supports Dual Analysis mode to compare two people live for side-by-side assessment.",
@@ -81,9 +64,6 @@ const PROJECTS: ProjectShowcase[] = [
     github: GITHUB_PROFILE,
   },
   {
-    emoji: "📍",
-    hueA: 278,
-    hueB: 320,
     title: "Local Connect",
     description:
       "A civic reporting platform built in Dart with one-click issue submission. Users can track report progress, earn rewards for meaningful civic participation, and improve detection quality with Google ML Kit integration.",
@@ -93,24 +73,7 @@ const PROJECTS: ProjectShowcase[] = [
   },
 ];
 
-const cardVariants: Variants = {
-  offscreen: {
-    y: 180,
-    opacity: 0,
-  },
-  onscreen: {
-    y: 38,
-    opacity: 1,
-    rotate: -8,
-    transition: {
-      type: "spring",
-      bounce: 0.35,
-      duration: 0.85,
-    },
-  },
-};
-
-function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
+function ScrollProjectCard({ item }: { item: ProjectShowcase }) {
   const [videoLightboxOpen, setVideoLightboxOpen] = useState(false);
   const closeLightbox = useCallback(() => setVideoLightboxOpen(false), []);
   const lightboxVideoRef = useRef<HTMLVideoElement>(null);
@@ -129,86 +92,88 @@ function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
 
   return (
     <>
-      <motion.div
-        className={`card-container-${i} relative -mb-20 flex justify-center overflow-hidden pt-6`}
-        initial="offscreen"
-        whileInView="onscreen"
-        viewport={{ amount: 0.72, once: true }}
-      >
-        <motion.article
-          variants={cardVariants}
-          transition={{ ease: ease.cinematic }}
-          className="project-outer relative z-10 h-[500px] w-full max-w-[340px] sm:max-w-[390px]"
-          style={{ transformOrigin: "12% 60%" }}
-        >
-          <div className="project-dot" />
-          <div className="project-card">
-            <div className="project-ray" />
+      <motion.article variants={scrollRevealStagger.item} className="flex justify-center">
+        <FlippingCard
+          className="max-w-full"
+          width={340}
+          height={460}
+          frontContent={
             <button
               type="button"
               disabled={!item.video}
               onClick={() => item.video && setVideoLightboxOpen(true)}
-              className="relative block aspect-[16/9] w-full overflow-hidden rounded-xl disabled:cursor-default"
+              className="relative h-full w-full overflow-hidden rounded-lg text-left disabled:cursor-default"
             >
               {item.video ? (
                 <video
                   src={item.video}
                   muted
                   loop
-                  playsInline
                   autoPlay
+                  playsInline
                   preload="metadata"
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <Image src={item.image ?? "/projects/nexora-ai.png"} alt={item.title} fill unoptimized className="object-cover" />
+                <Image
+                  src={item.image ?? "/projects/nexora-ai.png"}
+                  alt={item.title}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
-              <div className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/45 px-2 py-1 text-[10px] font-medium text-white/90">
-                {item.video ? "Tap to play video" : "Live preview"}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                <p className="mt-1 text-xs text-white/80">
+                  {item.video ? "Hover to flip for details | Tap to play demo" : "Hover to flip for details"}
+                </p>
               </div>
             </button>
-            <div className="project-value mt-3">{item.title}</div>
-            <div className="text-xs text-muted-foreground">{item.description}</div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {item.tech.slice(0, 4).map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-foreground/15 bg-foreground/[0.03] px-2 py-0.5 text-[10px] font-medium text-foreground/80"
-                >
-                  {tech}
-                </span>
-              ))}
+          }
+          backContent={
+            <div className="flex h-full flex-col justify-between rounded-lg border border-border bg-background/95 p-4">
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {item.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-full border border-foreground/15 bg-foreground/[0.03] px-2.5 py-1 text-[11px] font-medium text-foreground/80"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs font-medium">
+                {item.href && (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-foreground/15 px-3 py-1.5 text-foreground/85 transition-colors hover:text-foreground"
+                  >
+                    Live
+                  </a>
+                )}
+                {item.github && (
+                  <a
+                    href={item.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-foreground/15 px-3 py-1.5 text-foreground/85 transition-colors hover:text-foreground"
+                  >
+                    GitHub
+                  </a>
+                )}
+              </div>
             </div>
-            <div className="mt-3 flex items-center gap-2 text-xs font-medium">
-              {item.href && (
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-foreground/15 px-2.5 py-1 text-foreground/85 transition-colors hover:text-foreground"
-                >
-                  Live
-                </a>
-              )}
-              {item.github && (
-                <a
-                  href={item.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-foreground/15 px-2.5 py-1 text-foreground/85 transition-colors hover:text-foreground"
-                >
-                  GitHub
-                </a>
-              )}
-            </div>
-            <div className="project-line project-line-top" />
-            <div className="project-line project-line-left" />
-            <div className="project-line project-line-bottom" />
-            <div className="project-line project-line-right" />
-          </div>
-        </motion.article>
-      </motion.div>
+          }
+        />
+      </motion.article>
 
       <AnimatePresence>
         {videoLightboxOpen && item.video && (
@@ -247,32 +212,39 @@ function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
 }
 
 export function ProjectsSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
     <DepthLayers as="section" id="projects" className="scroll-mt-24 px-6 py-8 md:py-12 md:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl" ref={ref}>
         <motion.div
           initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.75, ease: ease.cinematic }}
-          className="mb-8 md:mb-10"
+          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+          transition={{ duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-4 md:mb-5"
         >
           <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">Projects</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Tap any card with video to open full demo.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Hover to flip each card. Tap video cards to open demos.</p>
           <p className="mt-2 text-lg text-muted-foreground">A selection of recent work.</p>
         </motion.div>
 
-        <div className="mx-auto mb-10 w-full max-w-[500px] pb-20">
-          {PROJECTS.map((item, index) => (
-            <ScrollProjectCard key={item.title} item={item} i={index} />
+        <motion.div
+          variants={scrollRevealStagger.container}
+          initial="initial"
+          animate={isInView ? "animate" : "initial"}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {PROJECTS.map((item) => (
+            <ScrollProjectCard key={item.title} item={item} />
           ))}
-        </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, delay: 0.12, ease: ease.cinematic }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mt-10"
         >
           <GitHubActivity username="swaraj06643" />
         </motion.div>
