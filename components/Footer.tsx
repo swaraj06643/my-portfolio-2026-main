@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Linkedin, Github, Mail } from "lucide-react";
+import { FooterBackgroundGradient, TextHoverEffect } from "@/components/TextHoverEffect";
 
 const CONTACT_LINKS = [
   {
@@ -27,38 +28,37 @@ export function Footer() {
   return (
     <footer
       id="footer"
-      className="border-t border-foreground/[0.08] bg-background px-6 py-8 md:py-10 dark:border-foreground/10"
+      className="relative overflow-hidden border-t border-foreground/[0.08] bg-background px-6 py-10 md:py-14 dark:border-foreground/10"
     >
-      <div className="mx-auto max-w-6xl">
-        {/* Contact / Connect */}
-        <div className="flex flex-col items-center gap-8 text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Connect
-          </p>
-          <nav
-            className="flex flex-wrap items-center justify-center gap-8"
-            aria-label="Contact links"
-          >
-            {CONTACT_LINKS.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={label}
-                href={href}
-                target={href.startsWith("mailto:") ? undefined : "_blank"}
-                rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-                className="flex flex-col items-center gap-2 text-muted-foreground transition-colors duration-300 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                aria-label={label}
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-transparent transition-colors duration-300 hover:border-foreground/20 hover:bg-foreground/[0.04] dark:border-foreground/15 dark:hover:border-foreground/25 dark:hover:bg-foreground/[0.06]">
-                  <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />
-                </span>
-                <span className="text-sm font-medium">{label}</span>
-              </Link>
-            ))}
-          </nav>
+      <FooterBackgroundGradient />
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 text-center">
+        <div className="h-14 w-52 md:h-16 md:w-64">
+          <TextHoverEffect text="SUBHASISH" duration={0.2} />
         </div>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground/85">
+          Portfolio
+        </p>
 
-        {/* Copyright */}
-        <div className="mt-8 border-t border-foreground/[0.06] pt-6 text-center text-sm text-muted-foreground dark:border-foreground/10">
+        <nav
+          className="flex flex-wrap items-center justify-center gap-6"
+          aria-label="Footer links"
+        >
+          {CONTACT_LINKS.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={label}
+              href={href}
+              target={href.startsWith("mailto:") ? undefined : "_blank"}
+              rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+              className="group flex items-center gap-2 rounded-full border border-foreground/15 bg-background/35 px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-300 hover:text-foreground"
+              aria-label={label}
+            >
+              <Icon className="h-4 w-4 opacity-80 transition-opacity group-hover:opacity-100" />
+              <span>{label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className="w-full border-t border-foreground/[0.08] pt-5 text-center text-sm text-muted-foreground dark:border-foreground/10">
           © {year} Subhasish Rath. All rights reserved.
         </div>
       </div>
