@@ -1,79 +1,90 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { DepthLayers } from "@/components/DepthLayers";
+import {
+  Atom,
+  BrainCircuit,
+  Code2,
+  Database,
+  FileJson2,
+  Framer,
+  Globe,
+  Layers3,
+  Server,
+  Sparkles,
+  Wind,
+} from "lucide-react";
 
-const SKILLS = [
-  "TypeScript",
-  "Next.js",
-  "React",
-  "Node.js",
-  "AI / LLMs",
-  "Prompt Engineering",
-  "Tailwind",
-  "PostgreSQL",
-  "Python",
-  "Framer Motion",
-  "REST & GraphQL",
-  "Vercel",
+type IconGridItem = {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+};
+
+const SKILLS: IconGridItem[] = [
+  { id: "typescript", name: "TypeScript", icon: <FileJson2 className="h-9 w-9" /> },
+  { id: "nextjs", name: "Next.js", icon: <Layers3 className="h-9 w-9" /> },
+  { id: "react", name: "React", icon: <Atom className="h-9 w-9" /> },
+  { id: "nodejs", name: "Node.js", icon: <Server className="h-9 w-9" /> },
+  { id: "ai-llms", name: "AI / LLMs", icon: <BrainCircuit className="h-9 w-9" /> },
+  { id: "prompt", name: "Prompt Engineering", icon: <Sparkles className="h-9 w-9" /> },
+  { id: "tailwind", name: "Tailwind", icon: <Wind className="h-9 w-9" /> },
+  { id: "postgres", name: "PostgreSQL", icon: <Database className="h-9 w-9" /> },
+  { id: "python", name: "Python", icon: <Code2 className="h-9 w-9" /> },
+  { id: "framer", name: "Framer Motion", icon: <Framer className="h-9 w-9" /> },
+  { id: "api", name: "REST & GraphQL", icon: <Globe className="h-9 w-9" /> },
+  { id: "vercel", name: "Vercel", icon: <Layers3 className="h-9 w-9" /> },
 ];
 
-function SkillBubble({
-  children,
-  index,
-  isInView,
-}: {
-  children: ReactNode;
-  index: number;
-  isInView: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const spring = { type: "spring" as const, stiffness: 150, damping: 15 };
-  const translateX = useSpring(x, spring);
-  const translateY = useSpring(y, spring);
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const deltaX = (e.clientX - centerX) * 0.08;
-    const deltaY = (e.clientY - centerY) * 0.08;
-    x.set(deltaX);
-    y.set(deltaY);
-  };
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12,
+    },
+  },
+};
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
+function IconGrid({ items, className }: { items: IconGridItem[]; className?: string }) {
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{
-        delay: index * 0.05,
-        duration: 0.4,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-      style={{ translateX, translateY }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-60px" }}
       className={cn(
-        "liquid-glass-pane rounded-2xl px-5 py-3",
-        "cursor-default select-none transition-all duration-300",
-        "hover:shadow-glow-soft"
+        "grid grid-cols-2 gap-4 text-center sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6",
+        className
       )}
     >
-      <span className="text-sm font-medium text-foreground md:text-base">
-        {children}
-      </span>
+      {items.map((item) => (
+        <motion.div
+          key={item.id}
+          variants={itemVariants}
+          className="group relative flex flex-col items-center justify-center"
+          aria-label={item.name}
+        >
+          <div className="flex h-24 w-24 items-center justify-center rounded-xl border border-border/70 bg-card text-foreground shadow-[0_4px_14px_hsl(var(--foreground)/0.08)] transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-card/70 hover:shadow-[0_10px_26px_hsl(var(--foreground)/0.14)]">
+            {item.icon}
+          </div>
+          <p className="mt-2 text-xs font-medium text-muted-foreground">{item.name}</p>
+        </motion.div>
+      ))}
     </motion.div>
   );
 }
@@ -102,13 +113,7 @@ export function SkillsSection() {
           Technologies and tools I work with.
         </motion.p>
 
-        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-          {SKILLS.map((skill, i) => (
-            <SkillBubble key={skill} index={i} isInView={isInView}>
-              {skill}
-            </SkillBubble>
-          ))}
-        </div>
+        <IconGrid items={SKILLS} />
       </div>
     </DepthLayers>
   );
