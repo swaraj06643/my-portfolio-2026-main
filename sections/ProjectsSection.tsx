@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DepthLayers } from "@/components/DepthLayers";
 import { GitHubActivity } from "@/components/GitHubActivity";
@@ -111,15 +110,7 @@ const cardVariants: Variants = {
   },
 };
 
-const hue = (h: number) => `hsl(${h}, 100%, 50%)`;
-
-const splashStyle: CSSProperties = {
-  clipPath:
-    'path("M 0 303.5 C 0 292.454 8.995 285.101 20 283.5 L 460 219.5 C 470.085 218.033 480 228.454 480 239.5 L 500 430 C 500 441.046 491.046 450 480 450 L 20 450 C 8.954 450 0 441.046 0 430 Z")',
-};
-
 function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
-  const background = `linear-gradient(306deg, ${hue(item.hueA)}, ${hue(item.hueB)})`;
   const [videoLightboxOpen, setVideoLightboxOpen] = useState(false);
   const closeLightbox = useCallback(() => setVideoLightboxOpen(false), []);
   const lightboxVideoRef = useRef<HTMLVideoElement>(null);
@@ -139,66 +130,63 @@ function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
   return (
     <>
       <motion.div
-        className={`card-container-${i} relative -mb-28 flex justify-center overflow-hidden pt-6`}
+        className={`card-container-${i} relative -mb-20 flex justify-center overflow-hidden pt-6`}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ amount: 0.72, once: true }}
       >
-        <div className="absolute inset-0 rounded-3xl opacity-70 blur-[2px]" style={{ ...splashStyle, background }} />
         <motion.article
           variants={cardVariants}
           transition={{ ease: ease.cinematic }}
-          className="liquid-glass-card relative z-10 flex h-[500px] w-full max-w-[340px] flex-col overflow-hidden rounded-[22px] shadow-2xl sm:max-w-[390px]"
+          className="project-outer relative z-10 h-[500px] w-full max-w-[340px] sm:max-w-[390px]"
           style={{ transformOrigin: "12% 60%" }}
         >
-          <button
-            type="button"
-            disabled={!item.video}
-            onClick={() => item.video && setVideoLightboxOpen(true)}
-            className="relative block aspect-[16/9] w-full overflow-hidden disabled:cursor-default"
-          >
-            {item.video ? (
-              <video
-                src={item.video}
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="metadata"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <Image src={item.image ?? "/projects/nexora-ai.png"} alt={item.title} fill unoptimized className="object-cover" />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent" />
-            <div className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-medium text-white/90">
-              {item.video ? "Tap to play video" : "Live preview"}
-            </div>
-          </button>
-
-          <div className="flex h-full flex-col justify-between p-5">
-            <div>
-              <div className="mb-2 text-3xl">{item.emoji}</div>
-              <h3 className="text-xl font-semibold tracking-tight text-foreground">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {item.tech.map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-full border border-foreground/12 bg-foreground/[0.04] px-2.5 py-1 text-[11px] font-medium text-foreground/80"
-                  >
-                    {tech}
-                  </span>
-                ))}
+          <div className="project-dot" />
+          <div className="project-card">
+            <div className="project-ray" />
+            <button
+              type="button"
+              disabled={!item.video}
+              onClick={() => item.video && setVideoLightboxOpen(true)}
+              className="relative block aspect-[16/9] w-full overflow-hidden rounded-xl disabled:cursor-default"
+            >
+              {item.video ? (
+                <video
+                  src={item.video}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image src={item.image ?? "/projects/nexora-ai.png"} alt={item.title} fill unoptimized className="object-cover" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+              <div className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/45 px-2 py-1 text-[10px] font-medium text-white/90">
+                {item.video ? "Tap to play video" : "Live preview"}
               </div>
+            </button>
+            <div className="project-value mt-3">{item.title}</div>
+            <div className="text-xs text-muted-foreground">{item.description}</div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {item.tech.slice(0, 4).map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-foreground/15 bg-foreground/[0.03] px-2 py-0.5 text-[10px] font-medium text-foreground/80"
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
-            <div className="mt-4 flex items-center gap-3 text-xs font-medium">
+            <div className="mt-3 flex items-center gap-2 text-xs font-medium">
               {item.href && (
                 <a
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-foreground/15 px-3 py-1.5 text-foreground/85 transition-colors hover:text-foreground"
+                  className="rounded-full border border-foreground/15 px-2.5 py-1 text-foreground/85 transition-colors hover:text-foreground"
                 >
                   Live
                 </a>
@@ -208,12 +196,16 @@ function ScrollProjectCard({ item, i }: { item: ProjectShowcase; i: number }) {
                   href={item.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-foreground/15 px-3 py-1.5 text-foreground/85 transition-colors hover:text-foreground"
+                  className="rounded-full border border-foreground/15 px-2.5 py-1 text-foreground/85 transition-colors hover:text-foreground"
                 >
                   GitHub
                 </a>
               )}
             </div>
+            <div className="project-line project-line-top" />
+            <div className="project-line project-line-left" />
+            <div className="project-line project-line-bottom" />
+            <div className="project-line project-line-right" />
           </div>
         </motion.article>
       </motion.div>
